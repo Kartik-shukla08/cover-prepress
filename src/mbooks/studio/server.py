@@ -279,16 +279,19 @@ async def serve_studio_index():
     return FileResponse(index_file, media_type="text/html")
 
 
-@app.post("/api/calculate")
+@app.api_route("/api/calculate", methods=["GET", "POST"])
 async def api_calculate(request: Request):
     """Compute prepress specifications across KDP, IngramSpark, and Lulu."""
     try:
-        content_type = request.headers.get("content-type", "")
-        if "application/json" in content_type:
-            data = await request.json()
+        if request.method == "GET":
+            data: Dict[str, Any] = dict(request.query_params)
         else:
-            form = await request.form()
-            data = dict(form)
+            content_type = request.headers.get("content-type", "")
+            if "application/json" in content_type:
+                data = await request.json()
+            else:
+                form = await request.form()
+                data = dict(form)
 
         publisher = str(data.get("publisher", "kdp"))
         binding = str(data.get("binding", "paperback"))
@@ -599,21 +602,6 @@ async def api_decompose(request: Request):
                 single_img = _load_image_from_base64_or_path(raw_data["image_base64"])
             elif "image_path" in raw_data and raw_data["image_path"]:
                 single_img = _load_image_from_base64_or_path(raw_data["image_path"])
-
-        if single_img is None and str(raw_data.get("use_sample", "")).lower() == "denise":
-            # Locate Denise reference cover in repository corpus
-            sample_name = "Denise_Hinton_Bazemore_-_That_show_lives_on_-_Cover_Design_2_3.jpeg"
-            candidates = [
-                Path.cwd() / "corpus" / sample_name,
-                Path(__file__).resolve().parents[5] / "corpus" / sample_name,
-                Path(__file__).resolve().parents[4] / "corpus" / sample_name,
-            ]
-            for sample_path in candidates:
-                if sample_path.exists():
-                    with Image.open(sample_path) as simg:
-                        simg.load()
-                        single_img = simg.copy()
-                    break
 
         publisher = str(raw_data.get("publisher", "kdp"))
         binding = str(raw_data.get("binding", "paperback"))

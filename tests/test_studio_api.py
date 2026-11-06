@@ -172,6 +172,14 @@ class TestStudioCalculateApi:
         res = client.post("/api/calculate", json={"publisher": "unknown", "page_count": 100})
         assert res.status_code == 400
 
+    def test_calculate_get_healthcheck(self):
+        """GET /api/calculate returns 200 OK default spec for Railway healthcheck."""
+        res = client.get("/api/calculate")
+        assert res.status_code == 200
+        data = res.json()
+        assert data["status"] == "success"
+        assert data["spec"]["publisher"] == "kdp"
+
 
 # ===========================================================================
 # 3. Crease Detection Endpoint (/api/crease-detect) Tests
@@ -472,12 +480,12 @@ class TestStudioExportApi:
 class TestStudioDecomposeLayersApi:
     """Verify Canva-like modular layer decomposition and fixed skeletal guidelines."""
 
-    def test_decompose_denise_sample_cover(self):
-        """Decompose Denise reference cover into Back, Spine BG, Spine Elements, and Front layers."""
+    def test_decompose_uploaded_cover(self, synthetic_cover_image: Path):
+        """Decompose uploaded spread into Back, Spine BG, Spine Elements, and Front layers."""
         res = client.post(
             "/api/decompose",
             json={
-                "use_sample": "denise",
+                "image_path": str(synthetic_cover_image),
                 "publisher": "kdp",
                 "binding": "paperback",
                 "trim_size": "6x9",
@@ -499,12 +507,12 @@ class TestStudioDecomposeLayersApi:
         assert g["spine_safe_zone"][0] > 1850.0
         assert g["spine_safe_zone"][2] < 1925.0
 
-        # Source spread cut metadata should report source 1280x880 coordinates (~588..691)
+        # Source spread cut metadata should report synthetic 1200x800 coordinates (~550..650)
         src = data["source_spread"]
-        assert src["width"] == 1280
-        assert src["height"] == 880
-        assert 580 <= src["x_left"] <= 596
-        assert 685 <= src["x_right"] <= 698
+        assert src["width"] == 1200
+        assert src["height"] == 800
+        assert 500 <= src["x_left"] <= 580
+        assert 620 <= src["x_right"] <= 700
 
         # Layers must include back_panel, spine_bg, front_panel, and spine foreground elements
         layer_ids = [l["id"] for l in data["layers"]]
