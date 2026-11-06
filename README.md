@@ -11,7 +11,7 @@ Standalone repository containing:
 Run this **single command** in PowerShell or Terminal:
 
 ```bash
-pip install git+https://github.com/<your-org>/cover-prepress.git && mbooks install-skill
+pip install git+https://github.com/Kartik-shukla08/cover-prepress.git && mbooks install-skill
 ```
 
 This installs the `mbooks` CLI and registers the `cover-prepress` skill globally across:
@@ -22,7 +22,7 @@ This installs the `mbooks` CLI and registers the `cover-prepress` skill globally
 Alternatively, install via the `skills` CLI:
 
 ```bash
-npx skills add <your-org>/cover-prepress --skill cover-prepress -g
+npx skills add Kartik-shukla08/cover-prepress --skill cover-prepress -g
 ```
 
 ---
