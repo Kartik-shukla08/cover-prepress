@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markee Books Cover Studio</title>
+  <link rel="stylesheet" href="/static/studio.css?v=20261106_v7" />
+</head>
+<body>
+  <!-- Single Clean Top Bar -->
+  <header class="studio-header">
+    <div class="header-left">
+      <div class="brand">
+        <div class="brand-icon">📖</div>
+        <h1>Markee Books <span class="accent">Cover Studio</span></h1>
+      </div>
+      <div class="header-divider"></div>
+      <div class="history-btns">
+        <button id="btn-undo" class="icon-pill-btn" type="button" title="Undo (Ctrl+Z)">↩ Undo</button>
+        <button id="btn-redo" class="icon-pill-btn" type="button" title="Redo (Ctrl+Y)">↪ Redo</button>
+      </div>
+      <div id="status-badge" class="badge badge-ready">Template Ready</div>
+      <div id="header-dims" class="dims-pill">6" × 9" · 150 pages</div>
+    </div>
+
+    <!-- Center Mode Switcher -->
+    <div class="view-switcher">
+      <button id="btn-view-canvas" class="view-btn active" type="button">Edit Cover</button>
+      <button id="btn-view-divide" class="view-btn" type="button">Adjust Spine Split</button>
+      <button id="btn-view-proof" class="view-btn" type="button">Print Check</button>
+    </div>
+
+    <!-- Right Actions: Guides Popover + Primary PDF Download + More Formats Popover -->
+    <div class="header-right">
+      <!-- Guides Dropdown -->
+      <div class="dropdown-wrap">
+        <button id="btn-guides-menu" class="btn btn-ghost" type="button">
+          📏 Guides ▾
+        </button>
+        <div id="guides-popover" class="popover-menu hidden">
+          <div class="popover-title">Template Guides</div>
+          <label class="toggle-item">
+            <input type="checkbox" id="chk-trim" checked />
+            <span class="swatch swatch-trim"></span> Book Edge (Trim)
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="chk-creases" checked />
+            <span class="swatch swatch-crease"></span> Spine Fold Lines
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="chk-spine-safe" checked />
+            <span class="swatch swatch-spine-safe"></span> Spine Text Safe Area
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="chk-bleed" checked />
+            <span class="swatch swatch-bleed"></span> Outer Cut Margin (Bleed)
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="chk-cover-safe" checked />
+            <span class="swatch swatch-cover-safe"></span> Inner Safe Margin
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="chk-barcode" checked />
+            <span class="swatch swatch-barcode"></span> Barcode Box
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="chk-measurements" checked />
+            <span class="swatch swatch-measure"></span> Area Labels
+          </label>
+        </div>
+      </div>
+
+      <!-- Download Split Button -->
+      <div class="download-group">
+        <button id="btn-export-pdf" class="btn btn-primary" type="button">
+          Download Print PDF
+        </button>
+        <div class="dropdown-wrap">
+          <button id="btn-more-exports" class="btn btn-primary-caret" type="button" title="More Download Formats">
+            ▾
+          </button>
+          <div id="export-popover" class="popover-menu popover-right hidden">
+            <div class="popover-title">More Formats</div>
+            <button id="btn-export-png" class="popover-action" type="button">🖼️ High-Res PNG Image</button>
+            <button id="btn-export-jpg" class="popover-action" type="button">📷 High-Res JPG Image</button>
+            <button id="btn-export-zip" class="popover-action" type="button">📦 Complete Print Bundle (.ZIP)</button>
+            <div class="popover-sep"></div>
+            <button id="btn-toggle-specs-drawer" class="popover-action" type="button">📊 View Print Measurements</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main id="studio-workspace" class="studio-workspace drawer-collapsed">
+    <!-- Clean Left Sidebar -->
+    <aside class="sidebar sidebar-left">
+      <!-- Card 1: Book Setup -->
+      <section class="panel">
+        <h2 class="panel-title">Book Setup</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="sel-publisher">Platform</label>
+            <select id="sel-publisher">
+              <option value="kdp" selected>Amazon KDP</option>
+              <option value="ingram">IngramSpark</option>
+              <option value="lulu">Lulu Press</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sel-binding">Cover Type</label>
+            <select id="sel-binding">
+              <option value="paperback" selected>Paperback</option>
+              <option value="casewrap">Hardcover</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="sel-trim">Book Size</label>
+            <select id="sel-trim">
+              <option value="5x8">5" × 8"</option>
+              <option value="5.5x8.5">5.5" × 8.5"</option>
+              <option value="6x9" selected>6" × 9"</option>
+              <option value="7x10">7" × 10"</option>
+              <option value="8.5x11">8.5" × 11"</option>
+              <option value="custom">Custom...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="inp-pages">Pages</label>
+            <input type="number" id="inp-pages" value="150" min="24" max="828" step="2" />
+          </div>
+        </div>
+
+        <div id="custom-trim-row" class="form-row hidden">
+          <div class="form-group">
+            <label for="inp-trim-w">Width (in)</label>
+            <input type="number" id="inp-trim-w" value="6.0" min="4.0" max="12.0" step="0.125" />
+          </div>
+          <div class="form-group">
+            <label for="inp-trim-h">Height (in)</label>
+            <input type="number" id="inp-trim-h" value="9.0" min="6.0" max="12.0" step="0.125" />
+          </div>
+        </div>
+
+        <details class="more-options">
+          <summary>Paper &amp; Ink Options</summary>
+          <div class="form-row" style="margin-top: 8px;">
+            <div class="form-group">
+              <label for="sel-paper">Paper</label>
+              <select id="sel-paper">
+                <option value="white" selected>White</option>
+                <option value="cream">Cream</option>
+                <option value="groundwood">Groundwood</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sel-ink">Ink</label>
+              <select id="sel-ink">
+                <option value="color" selected>Color</option>
+                <option value="black">B&amp;W</option>
+              </select>
+            </div>
+            <div class="form-group" style="max-width: 72px;">
+              <label for="sel-dpi">DPI</label>
+              <select id="sel-dpi">
+                <option value="300" selected>300</option>
+                <option value="150">150</option>
+              </select>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Card 2: Cover Image -->
+      <section class="panel">
+        <div class="panel-header-row">
+          <h2 class="panel-title">Cover Artwork</h2>
+          <div class="mode-tabs-mini">
+            <button id="tab-single-spread" class="mini-tab active" type="button">Full Cover</button>
+            <button id="tab-three-panels" class="mini-tab" type="button">3 Files</button>
+          </div>
+        </div>
+
+        <div id="upload-single-container">
+          <div id="dropzone-single" class="dropzone">
+            <input type="file" id="file-single" accept="image/png,image/jpeg,image/webp,image/tiff" hidden />
+            <div class="dropzone-content">
+              <span class="drop-icon">🖼️</span>
+              <p>Drop cover image or <span class="link">browse</span></p>
+              <small id="file-single-name" class="muted">PNG, JPG, TIFF</small>
+            </div>
+          </div>
+        </div>
+
+        <div id="upload-panels-container" class="hidden">
+          <div class="panel-upload-grid">
+            <div class="mini-dropzone" id="drop-back">
+              <input type="file" id="file-back" accept="image/*" hidden />
+              <strong>Back Cover</strong>
+              <span id="name-back" class="muted">Choose file</span>
+            </div>
+            <div class="mini-dropzone" id="drop-spine">
+              <input type="file" id="file-spine" accept="image/*" hidden />
+              <strong>Spine</strong>
+              <span id="name-spine" class="muted">Optional</span>
+            </div>
+            <div class="mini-dropzone" id="drop-front">
+              <input type="file" id="file-front" accept="image/*" hidden />
+              <strong>Front Cover</strong>
+              <span id="name-front" class="muted">Choose file</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button id="btn-divide-source" class="btn btn-secondary" type="button">
+            ✂️ Adjust Split
+          </button>
+          <button id="btn-refresh-preview" class="btn btn-ghost-accent" type="button">
+            🪄 Auto-Fit
+          </button>
+        </div>
+      </section>
+
+      <!-- Card 3: Cover Parts -->
+      <section class="panel panel-layers">
+        <div class="panel-header-row">
+          <h2 class="panel-title">Cover Parts</h2>
+          <div class="quick-links">
+            <button id="btn-select-spine-group" class="text-btn" type="button">Spine</button>
+            <span>·</span>
+            <button id="btn-select-all-panels" class="text-btn" type="button">Select All</button>
+          </div>
+        </div>
+
+        <div id="layer-list" class="layer-list">
+          <div class="empty-layers-msg">Upload a cover above to edit Back, Spine, and Front parts.</div>
+        </div>
+
+        <!-- Hidden / Collapsible exact coordinates for power users -->
+        <div id="inspector-box" class="inspector-box hidden">
+          <details class="more-options">
+            <summary id="inspector-layer-name">Position &amp; Size Options</summary>
+            <div style="margin-top: 8px;">
+              <label class="lock-toggle" style="margin-bottom: 6px;">
+                <input type="checkbox" id="chk-lock-aspect" /> Keep proportions when resizing
+              </label>
+              <div class="inspector-grid">
+                <div class="insp-field"><label>X</label><input type="number" id="insp-x" step="1" /></div>
+                <div class="insp-field"><label>Y</label><input type="number" id="insp-y" step="1" /></div>
+                <div class="insp-field"><label>W</label><input type="number" id="insp-w" min="4" step="1" /></div>
+                <div class="insp-field"><label>H</label><input type="number" id="insp-h" min="4" step="1" /></div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+    </aside>
+
+    <!-- Center Canvas Stage -->
+    <section class="center-stage">
+      <!-- Floating Context Bar (Canva-style: changes based on what you're doing) -->
+      <div class="floating-context-bar">
+        <!-- Default Contextual Actions when editing cover -->
+        <div id="context-normal-bar" class="context-bar-inner">
+          <button id="btn-tool-select" class="ctx-btn active" type="button" title="Select, Move, or Resize parts">
+            ↖ Select / Resize
+          </button>
+          <button id="btn-tool-crop" class="ctx-btn" type="button" title="Trim edges of selected part without stretching (or double-click part)">
+            ✂️ Crop Part
+          </button>
+          <button id="btn-tool-pan" class="ctx-btn" type="button" title="Drag to pan around workspace (or hold Space)">
+            ✋ Pan
+          </button>
+          <span class="ctx-divider"></span>
+          <button id="btn-center-spine-opt" class="ctx-btn" type="button" title="Center spine text between the fold lines">
+            🎯 Center Spine
+          </button>
+          <button id="btn-snap-skeleton" class="ctx-btn" type="button" title="Fit Back, Spine, and Front neatly to template guides">
+            📐 Fit to Template
+          </button>
+          <span class="ctx-divider"></span>
+          <button id="btn-group-selected" class="ctx-btn" type="button" title="Group selected parts to move together">
+            🔗 Group
+          </button>
+          <button id="btn-ungroup-selected" class="ctx-btn" type="button" title="Ungroup to move each part separately">
+            🔓 Ungroup
+          </button>
+          <button id="btn-reset-layer" class="ctx-btn" type="button" title="Reset selected part">
+            ↺ Reset
+          </button>
+          <!-- Hidden alias button for inspector compatibility -->
+          <button id="btn-toggle-crop" class="hidden" type="button"></button>
+        </div>
+
+        <!-- Contextual bar when in Crop Mode -->
+        <div id="crop-mode-banner" class="context-bar-inner crop-bar hidden">
+          <span class="crop-hint">✂️ <strong>Cropping:</strong> Drag orange handles to trim edges · Drag inside to slide image</span>
+          <button id="btn-uncrop-full" class="ctx-btn" type="button">↺ Full Image</button>
+          <button id="btn-apply-crop" class="ctx-btn ctx-btn-primary" type="button">✓ Done</button>
+          <button id="btn-cancel-crop" class="ctx-btn" type="button">✕ Cancel</button>
+        </div>
+
+        <!-- Contextual bar when in Adjust Spine Split Mode -->
+        <div id="divide-mode-banner" class="context-bar-inner divide-bar hidden">
+          <span class="crop-hint">✂️ Drag the <strong>Blue (Left)</strong> and <strong>Pink (Right)</strong> lines to mark your spine</span>
+          <button id="btn-auto-detect" class="ctx-btn" type="button">🪄 Auto-Find Spine</button>
+          <button id="btn-apply-source-cut" class="ctx-btn ctx-btn-primary" type="button">✓ Apply Split</button>
+        </div>
+      </div>
+
+      <!-- Scrollable & Pannable Canvas Viewport -->
+      <div class="canvas-stage" id="canvas-stage">
+        <!-- Grey Loading Overlay -->
+        <div id="canvas-loading-overlay" class="canvas-loading-overlay hidden">
+          <div class="loading-card">
+            <div class="spinner"></div>
+            <div id="loading-message" class="loading-text">Updating template...</div>
+          </div>
+        </div>
+
+        <div id="canvas-scroll-sizer" class="canvas-scroll-sizer">
+          <div id="canvas-wrapper" class="canvas-wrapper">
+            <canvas id="studio-canvas" width="1200" height="880"></canvas>
+          </div>
+        </div>
+        <img id="proof-image-view" class="proof-image hidden" alt="Print Check Preview" />
+      </div>
+
+      <!-- Floating Bottom Pills (Status on Left, Zoom Pill on Right — No Cluttered Footer Bar) -->
+      <div class="floating-bottom-bar">
+        <div class="floating-status-pill">
+          <span id="selection-status">Ready</span>
+          <span id="cursor-coords" class="hidden"></span>
+        </div>
+
+        <div class="floating-zoom-pill">
+          <button id="btn-zoom-spine" class="zoom-pill-btn accent-pill" type="button" title="Zoom in close to Spine">
+            🔍 Spine
+          </button>
+          <button id="btn-zoom-out" class="zoom-pill-btn" type="button" title="Zoom Out">−</button>
+          <span id="zoom-label" class="zoom-readout">Fit</span>
+          <button id="btn-zoom-in" class="zoom-pill-btn" type="button" title="Zoom In">+</button>
+          <button id="btn-zoom-reset" class="zoom-pill-btn" type="button" title="Fit to Screen">Fit</button>
+          <button id="btn-zoom-100" class="zoom-pill-btn" type="button" title="100% Size">100%</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Collapsible Print Measurements Drawer (Hidden by default) -->
+    <aside id="sidebar-right" class="sidebar sidebar-right hidden">
+      <section class="panel">
+        <div class="panel-header-row">
+          <h2 class="panel-title">Print Check</h2>
+          <button id="btn-close-specs-drawer" class="icon-pill-btn" type="button">✕</button>
+        </div>
+
+        <div id="spine-warning-banner" class="alert alert-warning hidden">
+          Page count is too low for spine text. Spine text is hidden automatically.
+        </div>
+
+        <div class="diagnostic-list">
+          <div class="diag-item"><span class="diag-label">Spine Fit</span><span id="diag-spine-safe" class="diag-val pass">Ready</span></div>
+          <div class="diag-item"><span class="diag-label">Left Margin</span><span id="diag-left-clear" class="diag-val">—</span></div>
+          <div class="diag-item"><span class="diag-label">Right Margin</span><span id="diag-right-clear" class="diag-val">—</span></div>
+          <div class="diag-item"><span class="diag-label">Centering</span><span id="diag-opt-shift" class="diag-val">—</span></div>
+          <div class="diag-item"><span class="diag-label">Resolution</span><span id="diag-dpi" class="diag-val">300 DPI</span></div>
+          <div class="diag-item"><span class="diag-label">Ink Density</span><span id="diag-tac" class="diag-val">OK</span></div>
+        </div>
+
+        <div id="warnings-container" class="warnings-box hidden">
+          <h3>Notes</h3>
+          <ul id="warnings-list"></ul>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title" style="margin-bottom:8px;">Template Size</h2>
+        <div class="spec-table">
+          <div class="spec-row"><span>Full Cover</span><strong id="spec-total-dim">12.588" × 9.250"</strong></div>
+          <div class="spec-row"><span>Pixels</span><strong id="spec-pixel-dim">3776 × 2775 px</strong></div>
+          <div class="spec-row"><span>Spine Width</span><strong id="spec-spine-w">0.338" (101 px)</strong></div>
+          <div class="spec-row"><span>Spine Folds</span><strong id="spec-fold-x">1838 / 1939 px</strong></div>
+          <div class="spec-row"><span>Outer Bleed</span><strong id="spec-bleed">0.125" (38 px)</strong></div>
+          <div class="spec-row"><span>Safe Margin</span><strong id="spec-spine-safe">0.0625" (18.8 px)</strong></div>
+        </div>
+
+        <input type="hidden" id="inp-spine-left" value="" />
+        <input type="hidden" id="inp-spine-right" value="" />
+        <input type="hidden" id="rng-spine-shift" value="0" />
+        <input type="hidden" id="rng-safe-buffer" value="0" />
+      </section>
+    </aside>
+  </main>
+
+  <script src="/static/studio.js?v=20261106_v11"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mbooks-cover-prepress"
+version = "1.0.0"
+description = "Markee Books — Standalone Cover Prepress Engine, Multi-Publisher Calculator, CLI & Canva-Style Web Studio"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.5.0",
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "pymupdf>=1.24.0",
+    "pillow>=10.0.0",
+    "python-multipart>=0.0.9",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "httpx>=0.26.0",
+]
+
+[project.scripts]
+mbooks = "mbooks.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mbooks"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
